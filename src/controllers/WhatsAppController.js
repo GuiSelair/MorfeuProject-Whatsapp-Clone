@@ -31,6 +31,15 @@ class WhatsAppController{
         this.el.btnClosePanelAddContact.on("click", event =>{
             this.el.panelAddContact.removeClass("open")
         })
+
+        this.el.photoContainerEditProfile.on("click", event => {
+            this.el.inputProfilePhoto.click();
+        })
+
+        this.el.inputNamePanelEditProfile.on("keypress", event => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                this.el.btnSavePanelEditProfile.click()
     }
 
     closeAllLeftPanel(){
