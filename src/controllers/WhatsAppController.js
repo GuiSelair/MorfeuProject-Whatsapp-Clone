@@ -78,6 +78,10 @@ class WhatsAppController {
 
         // this.btnAttachContact.on("click", () => { })
 
+    closeAllMainPanel() {
+        this.el.panelMessagesContainer.hide();
+        this.el.panelDocumentPreview.removeClass("open");
+        this.el.panelCamera.removeClass("open");
     }
 
     closeMenuAttach(event) {
