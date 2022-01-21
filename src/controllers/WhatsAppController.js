@@ -70,13 +70,59 @@ class WhatsAppController {
             document.addEventListener("click", this.closeMenuAttach.bind(this))
         })
 
-        // this.btnAttachPhoto.on("click", () => { })
+        this.el.btnAttachPhoto.on("click", () => {
+            this.el.inputPhoto.click();
+        })
 
-        // this.btnAttachDocument.on("click", () => { })
+        this.el.inputPhoto.on("change", () => {
+            [...this.el.inputPhoto.files].forEach(file => {
+                console.log(file);
+            });
+        });
 
-        // this.btnAttachCamera.on("click", () => { })
+        this.el.btnAttachCamera.on("click", () => {
+            this.el.panelMessagesContainer.hide();
+            this.el.panelCamera.addClass("open");
+            this.el.panelCamera.css({
+                "height": "calc(100% - 120px)"
+            });
+        });
 
-        // this.btnAttachContact.on("click", () => { })
+        this.el.btnClosePanelCamera.on("click", () => {
+            this.closeAllMainPanel();
+            this.el.panelMessagesContainer.show();
+        });
+
+        this.el.btnTakePicture.on("click", () => {
+            this.el.panelCamera.removeClass("open");
+        });
+
+        this.el.btnAttachDocument.on("click", () => {
+            this.closeAllMainPanel();
+            this.el.panelDocumentPreview.addClass("open");
+            this.el.panelDocumentPreview.css({
+                "height": "100%"
+            });
+        });
+
+        this.el.btnClosePanelDocumentPreview.on("click", () => {
+            this.closeAllMainPanel();
+            this.el.panelMessagesContainer.show();
+        });
+
+        this.el.btnSendDocument.on("click", () => {
+            console.log("send document");
+        });
+
+        this.el.btnAttachContact.on("click", () => {
+            this.el.modalContacts.show();
+        });
+
+        this.el.btnCloseModalContacts.on("click", () => {
+            this.el.modalContacts.hide();
+        });
+
+    }
 
     closeAllMainPanel() {
         this.el.panelMessagesContainer.hide();
