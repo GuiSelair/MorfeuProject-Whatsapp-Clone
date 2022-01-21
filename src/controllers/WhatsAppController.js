@@ -122,6 +122,35 @@ class WhatsAppController {
             this.el.modalContacts.hide();
         });
 
+        this.el.btnSendMicrophone.on("click", () => {
+            this.el.btnSendMicrophone.hide();
+            this.el.recordMicrophone.show();
+
+            this.startRecordMicrophoneTime();
+        });
+
+        this.el.btnCancelMicrophone.on("click", () => {
+           this.closeRecordMicrophone();
+            
+        });
+
+        this.el.btnFinishMicrophone.on("click", () => {
+            this.closeRecordMicrophone();
+        });
+    }
+
+    startRecordMicrophoneTime() {
+        let start = Date.now();
+
+        this._recordMicrophoneInterval = setInterval(() => {
+            this.el.recordMicrophoneTimer.innerHTML = Format.toTime(Date.now() - start);
+        }, 100);
+    }
+
+    closeRecordMicrophone() {
+        this.el.recordMicrophone.hide();
+        this.el.btnSendMicrophone.show();
+        clearInterval(this._recordMicrophoneInterval);
     }
 
     closeAllMainPanel() {
