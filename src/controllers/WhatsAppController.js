@@ -181,9 +181,27 @@ class WhatsAppController {
                     img.classList.add(name);
                 });
 
-                this.el.inputText.appendChild(img);
-                this.el.inputText.dispatchEvent(new Event("keyup"));
+                
+                let cursor = window.getSelection();
+                
+                if (cursor?.focusNode?.id !== 'input-text') {
+                    this.el.inputText.focus();
+                    cursor = window.getSelection();
+                }
+                
+                let range = document.createRange();
+                range = cursor.getRangeAt(0);
 
+                range.deleteContents();
+
+                const fragment = document.createDocumentFragment();
+                fragment.appendChild(img);
+
+                range.insertNode(fragment);
+                range.setStartAfter(img);
+
+                
+                this.el.inputText.dispatchEvent(new Event("keyup"));
             });
         });
 
