@@ -1,6 +1,6 @@
 class CameraController {
   constructor(videoEl){
-    this._videoEl = this.videoEl;
+    this._videoEl = videoEl;
 
     navigator.mediaDevices.getUserMedia({
       video: true
