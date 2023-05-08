@@ -1,5 +1,7 @@
 
-class WhatsAppController {
+import { Format } from './../Utils/Format'
+import { CameraController } from './CameraController'
+export class WhatsAppController {
 
     constructor() {
         this.elementsPrototype();
@@ -186,7 +188,7 @@ class WhatsAppController {
                 
                 let cursor = window.getSelection();
                 
-                if (cursor?.focusNode?.id !== 'input-text') {
+                if (!cursor.focusNode || !cursor.focusNode.id === 'input-text') {
                     this.el.inputText.focus();
                     cursor = window.getSelection();
                 }

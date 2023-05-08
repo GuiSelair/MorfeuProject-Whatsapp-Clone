@@ -1,5 +1,5 @@
 
-class Format {
+export class Format {
 
     static getCamelCase(elementID){
         // MÉTODO RESPONSAVEL POR FORMATAR O ID DOS ELEMENTOS DO
