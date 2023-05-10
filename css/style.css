@@ -3218,7 +3218,8 @@ html[dir=rtl] ._2lkdt{
     opacity:0
 }
 .copyable-area{
-    user-select:text
+    user-select:text;
+    height:100%;
 }
 ._3TSht{
     position:absolute;
@@ -16135,4 +16136,8 @@ html[dir=rtl] ._2ICcy:after{
 }
 #main {
     display:none;
+}
+#picture-camera {
+    object-fit: contain;
+
 }

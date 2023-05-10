@@ -88,17 +88,35 @@ export class WhatsAppController {
             this.el.panelCamera.css({
                 "height": "calc(100% - 120px)"
             });
-
+            this.el.pictureCamera.hide();
+            this.el.videoCamera.show();
             this._camera = new CameraController(this.el.videoCamera);
         });
 
         this.el.btnClosePanelCamera.on("click", () => {
             this.closeAllMainPanel();
             this.el.panelMessagesContainer.show();
+            this._camera.stop()
         });
 
         this.el.btnTakePicture.on("click", () => {
-            this.el.panelCamera.removeClass("open");
+            const pictureUrl = this._camera.takePicture()
+            this.el.pictureCamera.src = pictureUrl;
+            this.el.pictureCamera.show();
+            this.el.videoCamera.hide();
+            // this._camera.stop()
+            this.el.btnReshootPanelCamera.show();
+            this.el.containerTakePicture.hide();
+            this.el.containerSendPicture.show();
+        });
+
+        this.el.btnReshootPanelCamera.on("click", () => {
+            this.el.pictureCamera.hide();
+            this.el.videoCamera.show();
+            // this._camera.stop()
+            this.el.btnReshootPanelCamera.hide();
+            this.el.containerTakePicture.show();
+            this.el.containerSendPicture.hide();
         });
 
         this.el.btnAttachDocument.on("click", () => {
