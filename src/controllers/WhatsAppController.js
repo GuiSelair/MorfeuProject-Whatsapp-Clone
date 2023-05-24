@@ -1,6 +1,7 @@
 
 import { Format } from './../Utils/Format'
 import { CameraController } from './CameraController'
+import { DocumentPreviewController } from './DocumentPreviewController'
 export class WhatsAppController {
 
     constructor() {
@@ -123,8 +124,9 @@ export class WhatsAppController {
             this.closeAllMainPanel();
             this.el.panelDocumentPreview.addClass("open");
             this.el.panelDocumentPreview.css({
-                "height": "100%"
+                "height": "calc(100% - 120px)"
             });
+            this.el.inputDocument.click()
         });
 
         this.el.btnClosePanelDocumentPreview.on("click", () => {
@@ -227,6 +229,26 @@ export class WhatsAppController {
             });
         });
 
+        this.el.inputDocument.on("change", () => {
+            console.log('this.el.inputDocument.files', this.el.inputDocument.files.length)
+            if (this.el.inputDocument.files.length) {
+                const file = this.el.inputDocument.files[0];
+                const _documentPreviewController = new DocumentPreviewController(file);
+
+                _documentPreviewController.getPreviewData().then((preview) => {
+                    console.log(preview)
+
+                    this.el.imgPanelDocumentPreview.src = preview.src; // tag img do preview
+                    this.el.imgPanelDocumentPreview.style.width = '100%'
+                    this.el.infoPanelDocumentPreview.innerHTML = preview.info; // tag div do nome do preview
+                    this.el.imagePanelDocumentPreview.show();
+                    this.el.filePanelDocumentPreview.hide();
+                }).catch(error => {
+                    console.error(error)
+                })
+
+            }
+        })
     }
 
     startRecordMicrophoneTime() {
