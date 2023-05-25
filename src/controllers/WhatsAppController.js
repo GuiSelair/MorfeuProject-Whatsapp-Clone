@@ -241,11 +241,35 @@ export class WhatsAppController {
                     this.el.imgPanelDocumentPreview.src = preview.src; // tag img do preview
                     this.el.imgPanelDocumentPreview.style.width = '100%'
                     this.el.infoPanelDocumentPreview.innerHTML = preview.info; // tag div do nome do preview
+                    
                     this.el.imagePanelDocumentPreview.show();
                     this.el.filePanelDocumentPreview.hide();
-                }).catch(error => {
-                    console.error(error)
+                }).catch(() => {
+                    switch (file.type) {
+                        case 'application/vnd.ms-excel':
+                        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-xls";
+                            break;
+                        case 'application/vnd.ms-powerpoint':
+                        case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-ppt";
+                            break;
+                        case 'application/vnd.ms-word':
+                        case 'application/vnd.msword':
+                        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-doc";
+                            break;
+                        default:
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-generic";
+                            break;
+                    }
+
+                    this.el.filenamePanelDocumentPreview.innerHTML = file.name;
+                    this.el.filePanelDocumentPreview.show();
+                    this.el.imagePanelDocumentPreview.hide();
                 })
+
+               
 
             }
         })

@@ -14784,6 +14784,8 @@ html[dir] .r4crx ._2GgBs{
 .r4crx ._3m_5X{
     z-index:2;
     height:100%;
+    width: 100%;
+    object-fit: contain;
     margin: 0 auto;
 }
 ._2k1om{

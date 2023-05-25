@@ -1,3 +1,8 @@
+const path = require('path')
+import * as pdfjsLib from 'pdfjs-dist'
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = path.resolve(__dirname, '../../dist/pdf.worker.bundle.js')
+
 export class DocumentPreviewController {
   constructor(file) {
     this._file = file;
@@ -27,8 +32,8 @@ export class DocumentPreviewController {
           break;
         case 'application/pdf':
           break;
-        case 'default':
-          console.log('Arquivo não suportado')
+       default:
+          reject()
           break;
       }
     })
