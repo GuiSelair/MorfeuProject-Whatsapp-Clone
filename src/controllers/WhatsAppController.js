@@ -2,6 +2,7 @@
 import { Format } from './../Utils/Format'
 import { CameraController } from './CameraController'
 import { DocumentPreviewController } from './DocumentPreviewController'
+import { MicrophoneController } from './MicrophoneController'
 export class WhatsAppController {
 
     constructor() {
@@ -105,7 +106,6 @@ export class WhatsAppController {
             this.el.pictureCamera.src = pictureUrl;
             this.el.pictureCamera.show();
             this.el.videoCamera.hide();
-            // this._camera.stop()
             this.el.btnReshootPanelCamera.show();
             this.el.containerTakePicture.hide();
             this.el.containerSendPicture.show();
@@ -114,7 +114,6 @@ export class WhatsAppController {
         this.el.btnReshootPanelCamera.on("click", () => {
             this.el.pictureCamera.hide();
             this.el.videoCamera.show();
-            // this._camera.stop()
             this.el.btnReshootPanelCamera.hide();
             this.el.containerTakePicture.show();
             this.el.containerSendPicture.hide();
@@ -151,18 +150,19 @@ export class WhatsAppController {
             this.el.recordMicrophone.show();
 
             this.startRecordMicrophoneTime();
+            this._microphoneController = new MicrophoneController();
+            this._microphoneController.on("play", (audio) => {
+                console.log("play", audio);
+            })
         });
 
         this.el.btnCancelMicrophone.on("click", () => {
+            this._microphoneController.stop();
            this.closeRecordMicrophone();
-            
         });
 
         this.el.btnFinishMicrophone.on("click", () => {
-            this.closeRecordMicrophone();
-        });
-
-        this.el.btnFinishMicrophone.on("click", () => {
+            this._microphoneController.stop();
             this.closeRecordMicrophone();
         });
 
