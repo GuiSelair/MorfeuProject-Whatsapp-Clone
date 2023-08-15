@@ -1,14 +1,21 @@
 
-import { Format } from './../Utils/Format'
+import { Format } from '../utils/Format'
 import { CameraController } from './CameraController'
 import { DocumentPreviewController } from './DocumentPreviewController'
 import { MicrophoneController } from './MicrophoneController'
+import { Datasource } from '../providers/Datasource'
+import { LocalStorage } from '../providers/Localstorage'
+import { User } from '../entities/User'
+
 export class WhatsAppController {
 
     constructor() {
+        window.datasource = new Datasource(new LocalStorage("@morfeu-whatsapp"));
         this.elementsPrototype();
         this.loadElements();
         this.initEvents();
+        this.initUserInfos()
+        console.log("\n=== CONFIGURAÇÃO INICIAL FINALIZADA ===")
     }
 
     initEvents() {
@@ -284,6 +291,27 @@ export class WhatsAppController {
                
 
             }
+        })
+    }
+
+    initUserInfos() {
+        this._user = new User('contato@guilhermeselair.dev')
+
+        this._user.on("datachange", data => {
+            console.log('data', data)
+            document.querySelector('title').innerHTML = data.name + ' - WhatsApp Clone'
+
+            if (data.photo) {
+                const profilePhoto = this.el.imgPanelEditProfile;
+                profilePhoto.src = data.photo;
+                profilePhoto.show()
+                this.el.imgDefaultPanelEditProfile.hide()
+
+                this.el.myPhoto.querySelector('img').src = data.photo;
+                this.el.myPhoto.querySelector('img').show()
+            }
+
+            this.el.inputNamePanelEditProfile.innerHTML = data.name;
         })
     }
 
