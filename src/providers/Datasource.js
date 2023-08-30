@@ -11,14 +11,18 @@ export class Datasource {
   }
 
   findAll(key) {
-      const values = []
-      for (let i = 0; i < this.api.lenght; i++) {
-        const keyFound = this.api.key(i)
-        if(keyFound.includes(`${this.api.getBaseKey}:${key}`)){
-          values.push(JSON.parse(window.localStorage.getItem(keyFound)))
-        }
+    const values = []
+    for (let i = 0; i < this.api.lenght(); i++) {
+      const keyFound = this.api.key(i)
+      if(keyFound.includes(`${this.api.getBaseKey()}:${key}`)){
+        values.push(this.api.get(keyFound.split(':')[1]))
       }
-      return values
+    }
+    return values
+  }
+
+  findByEmail(email) {
+    return this.api.get(`users-${email}`) 
   }
 
   save(key, value) {

@@ -2,46 +2,54 @@ import { ClassEvent } from "../utils/ClassEvent";
 import { sleep } from '../utils/sleep'
 
 export class User extends ClassEvent {
-
-  constructor(email){
+  constructor({
+    email,
+    name,
+    photo,
+  }){
     super()
-    this._data = {}
-    
-    this.verifyUserExists(email).then((userExists) => {
-      if (!userExists) {
-        this.createDefaultUser()
-      }
-
-      if (email) {
-        this.findByEmail(email).then((userContent) => {
-          if (userContent) {
-            this._data = userContent
-            this.trigger('datachange', this._data)
-          }
-        })
-  
-      }
+    this._data = {
+      email,
+      name,
+      photo,
+      contacts: []
+    }
+    sleep(100).then(() => {
+      this.loadContacts()
+      this.trigger('datachange', this._data)
     })
   }
 
-  async findByEmail(email) {
-    await sleep() 
-    return window.datasource.findOne(`users-${email}`) 
+  update(userContentUpdated) {
+    this._data = Object.assign(this._data, userContentUpdated)
+    window.datasource.save(`users-${this.email}`, this._data)
+    this.trigger('datachange', this._data)
   }
 
-  createDefaultUser() {
-    window.datasource.save('users-contato@guilhermeselair.dev', {
-        name: 'Guilherme Selair',
-        email: 'contato@guilhermeselair.dev',
-        photo: 'https://github.com/guiselair.png',
-    })
-
-    
+  addContact(newContact) {
+    window.datasource.save(`contact-${this.email}`, newContact)
+    this._data.contacts.push(newContact.toJSON())
+    this.trigger('newcontact', this._data)
   }
 
-  async verifyUserExists(email) {
-    const userContent = await this.findByEmail(email)
-    return !!userContent
+  loadContacts() {
+    this._data.contacts = window.datasource.findAll('contact')
+  }
+
+  toJSON() {
+    return this._data
+  }
+
+  static createDefaultUser() {
+    const defaultUserData = {
+      name: 'Guilherme Selair',
+      email: 'contato@guilhermeselair.dev',
+      photo: 'https://github.com/guiselair.png',
+    }
+
+    window.datasource.save('users-contato@guilhermeselair.dev', defaultUserData)
+
+    return defaultUserData
   }
 
   get name() {

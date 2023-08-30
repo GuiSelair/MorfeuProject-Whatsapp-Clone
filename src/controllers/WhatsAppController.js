@@ -8,13 +8,13 @@ import { LocalStorage } from '../providers/Localstorage'
 import { User } from '../entities/User'
 
 export class WhatsAppController {
-
     constructor() {
         window.datasource = new Datasource(new LocalStorage("@morfeu-whatsapp"));
+        this._user = null;
         this.elementsPrototype();
         this.loadElements();
         this.initEvents();
-        this.initUserInfos()
+        this.initUserInfos();
         console.log("\n=== CONFIGURAÇÃO INICIAL FINALIZADA ===")
     }
 
@@ -58,12 +58,36 @@ export class WhatsAppController {
 
         this.el.btnSavePanelEditProfile.on("click", event => {
             console.log(this.el.inputNamePanelEditProfile.innerHTML);
+            this.el.btnSavePanelEditProfile.disabled = true;
+            this._user.update({
+                name: this.el.inputNamePanelEditProfile.innerHTML,
+            })
+            this.el.btnSavePanelEditProfile.disabled = false;
         })
 
         this.el.formPanelAddContact.on("submit", event => {
             event.preventDefault();
-            console.log(this.el.formPanelAddContact.toJSON())
-            this.el.formPanelAddContact.reset();
+            const formData = new FormData(this.el.formPanelAddContact);
+
+            fetch('https://randomuser.me/api/').then(response => {
+                return response.json();
+            }).then(data => {
+                console.log(data)
+                const userData = data.results[0];
+
+                const newContact = new User({
+                    email: formData.get('email'),
+                    name: userData.name.first + ' ' + userData.name.last,
+                    photo: userData.picture.thumbnail,
+                })
+    
+                this._user.addContact(newContact)
+
+                this.el.formPanelAddContact.reset();
+                this.el.btnClosePanelAddContact.click();
+            })
+
+            
         })
 
         this.el.contactsMessagesList.querySelectorAll(".contact-item").forEach(message => {
@@ -295,10 +319,16 @@ export class WhatsAppController {
     }
 
     initUserInfos() {
-        this._user = new User('contato@guilhermeselair.dev')
+        const userContent = window.datasource.findByEmail('contato@guilhermeselair.dev')
+
+        if (userContent) {
+            this._user = new User(userContent)
+        } else {
+            this._user = new User(User.createDefaultUser())
+        }
 
         this._user.on("datachange", data => {
-            console.log('data', data)
+            console.log('datachange', data)
             document.querySelector('title').innerHTML = data.name + ' - WhatsApp Clone'
 
             if (data.photo) {
@@ -312,6 +342,12 @@ export class WhatsAppController {
             }
 
             this.el.inputNamePanelEditProfile.innerHTML = data.name;
+        })
+    }
+
+    initContactsList() {
+        this._user.on("newcontact", data => {
+            console.log(data)
         })
     }
 
