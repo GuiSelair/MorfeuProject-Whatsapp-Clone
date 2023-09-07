@@ -1,5 +1,6 @@
 import { ClassEvent } from "../utils/ClassEvent";
 import { sleep } from '../utils/sleep'
+import { Contact } from "./Contact";
 
 export class User extends ClassEvent {
   constructor({
@@ -15,7 +16,6 @@ export class User extends ClassEvent {
       contacts: []
     }
     sleep(100).then(() => {
-      this.loadContacts()
       this.trigger('datachange', this._data)
     })
   }
@@ -27,13 +27,32 @@ export class User extends ClassEvent {
   }
 
   addContact(newContact) {
-    window.datasource.save(`contact-${this.email}`, newContact)
+    window.datasource.save(`contact-${newContact.email}`, newContact)
     this._data.contacts.push(newContact.toJSON())
-    this.trigger('newcontact', this._data)
+    this.trigger('contactschange', this._data.contacts)
   }
 
   loadContacts() {
-    this._data.contacts = window.datasource.findAll('contact')
+    return new Promise((resolve, reject) => {
+      sleep(100).then(() => {
+        const contactsFounded = window.datasource.findAll('contact')
+
+        if (!contactsFounded) { return resolve() }
+        
+        contactsFounded.forEach(contact => {
+          this._data.contacts.push(new Contact({
+            email: contact.email,
+            name: contact.name,
+            photo: contact.photo,
+            lastMessage: contact.lastMessage,
+          }))
+        
+        })
+
+        resolve(this._data.contacts)
+        this.trigger('contactschange', this._data.contacts)
+      })
+    })
   }
 
   toJSON() {
