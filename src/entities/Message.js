@@ -1,8 +1,21 @@
 import { ClassEvent } from "../utils/ClassEvent";
 
 export class Message extends ClassEvent {
-  constructor() {
+  constructor({
+    type,
+    content,
+    from,
+    createdAt,
+    status,
+    id,
+  }) {
     super();
+    this._id = id || Date.now();
+    this._content = content;
+    this._type = type;
+    this._createdAt = createdAt ? new Date(createdAt) : new Date();
+    this._from = from;
+    this._status = status || 'wait';
   }
 
   getViewElement(me = true) {
@@ -247,16 +260,16 @@ export class Message extends ClassEvent {
         break;
       default:
         messageEl.innerHTML = `
-          <div class="font-style _3DFk6 tail">
+          <div class="font-style _3DFk6 tail" id="_${this._id}">
               <span class="tail-container"></span>
               <span class="tail-container highlight"></span>
               <div class="Tkt2p">
                   <div class="_3zb-j ZhF0n">
-                      <span dir="ltr" class="selectable-text invisible-space message-text">Oi!</span>
+                      <span dir="ltr" class="selectable-text invisible-space message-text">${this._content}</span>
                   </div>
                   <div class="_2f-RV">
                       <div class="_1DZAH">
-                          <span class="msg-time">11:33</span>
+                          <span class="msg-time">${this._createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                       </div>
                   </div>
               </div>
@@ -271,15 +284,45 @@ export class Message extends ClassEvent {
     return messageEl;
   }
 
+  static send(chatId, from, type, content){
+    const chatFounded = window.datasource.findOne(`chat-${chatId}`);
+
+    if (!chatFounded) {
+      throw new Error('Chat not found');
+    }
+
+    const message = new Message({
+      type,
+      content,
+      from,
+    });
+
+    chatFounded.messages.push({
+        type,
+        content,
+        from,
+        createdAt: message.createdAt,
+        id: message.id,
+    });
+    window.datasource.save(`chat-${chatId}`, chatFounded);
+    return message
+  }
+
   get content() { return this._content; }
   set content(value) { this._content = value; }
 
   get type() { return this._type; }
   set type(value) { this._type = value; }
 
-  get time() { return this._time; }
-  set time(value) { this._time = value; }
+  get createdAt() { return this._createdAt; }
+  set createdAt(value) { this._createdAt = value; }
 
   get status() { return this._status; }
   set status(value) { this._status = value; }
+
+  get from() { return this._from; }
+  set from(value) { this._from = value; }
+
+  get id() { return this._id; }
+  set id(value) { this._id = value; }
 }

@@ -7,6 +7,8 @@ import { Datasource } from '../providers/Datasource'
 import { LocalStorage } from '../providers/Localstorage'
 import { User } from '../entities/User'
 import { Contact } from '../entities/Contact'
+import { Chat } from '../entities/Chat'
+import { Message } from '../entities/Message'
 
 export class WhatsAppController {
     constructor() {
@@ -73,9 +75,9 @@ export class WhatsAppController {
             fetch('https://randomuser.me/api/').then(response => {
                 return response.json();
             }).then(data => {
-                console.log(data)
                 const userData = data.results[0];
-
+                
+                Chat.createIfNotExists(formData.get('email'))
                 const newContact = new Contact({
                     email: formData.get('email'),
                     name: userData.name.first + ' ' + userData.name.last,
@@ -223,7 +225,20 @@ export class WhatsAppController {
         });
 
         this.el.btnSend.on("click", () => {
-            console.log(this.el.inputText.innerHTML);
+            let scrollTop = this.el.panelMessagesContainer.scrollTop;
+            let scrollTopMax = this.el.panelMessagesContainer.scrollHeight - this.el.panelMessagesContainer.offsetHeight;
+            let autoScroll = scrollTop >= scrollTopMax;
+            const message = Message.send(this._activeContact.email, this._user.email, 'text', this.el.inputText.innerHTML);
+            const messageView = message.getViewElement(message.from === this._user.email)
+            this.el.panelMessagesContainer.appendChild(messageView)
+            this.el.inputText.innerHTML = "";
+            this.el.panelEmojis.removeClass("open");
+
+            if (autoScroll) {
+                this.el.panelMessagesContainer.scrollTop = this.el.panelMessagesContainer.scrollHeight - this.el.panelMessagesContainer.offsetHeight;
+            } else {
+                this.el.panelMessagesContainer.scrollTop = scrollTop;
+            }
         });
 
         this.el.btnEmojis.on("click", () => {
@@ -318,7 +333,6 @@ export class WhatsAppController {
             }
         })
     }
-
     initUserInfos() {
         const userContent = window.datasource.findByEmail('contato@guilhermeselair.dev')
 
@@ -411,24 +425,58 @@ export class WhatsAppController {
                 }
 
                 contactEl.on('click', () => {
-                    this.el.activeName.innerHTML = contact.name
-                    this.el.activeStatus.innerHTML = contact.status
-
-                    if (contact.photo) {
-                        this.el.activePhoto.src = contact.photo
-                        this.el.activePhoto.show()
-                    }
-
-                    this.el.home.hide()
-                    this.el.main.css({
-                        display: 'flex'
-                    })
+                    this.setActiveChat(contact)
                 })
                 this.el.contactsMessagesList.appendChild(contactEl)
             })
         })
         
         this._user.loadContacts()
+    }
+
+    setActiveChat(contact){
+        this._activeContact = contact
+        this.el.panelMessagesContainer.innerHTML = ""
+        this.el.activeName.innerHTML = contact.name
+        this.el.activeStatus.innerHTML = contact.status
+
+        if (contact.photo) {
+            this.el.activePhoto.src = contact.photo
+            this.el.activePhoto.show()
+        }
+
+        this.el.home.hide()
+        this.el.main.css({
+            display: 'flex'
+        })
+
+        /** Exibir mensagens existentes em tela */
+        const chatContent = window.datasource.findOne(`chat-${contact.email}`)
+
+        if (chatContent.messages) {
+            let scrollTop = this.el.panelMessagesContainer.scrollTop;
+            let scrollTopMax = this.el.panelMessagesContainer.scrollHeight - this.el.panelMessagesContainer.offsetHeight;
+            let autoScroll = scrollTop >= scrollTopMax;
+
+            chatContent.messages.forEach(existedMessage => {
+                const message = new Message({
+                    id: existedMessage.id,
+                    content: existedMessage.content,
+                    type: existedMessage.type,
+                    createdAt: existedMessage.createdAt,
+                    from: existedMessage.from,
+                })
+
+                const messageView = message.getViewElement(existedMessage.from === this._user.email)
+                this.el.panelMessagesContainer.appendChild(messageView)
+            })
+
+            if (autoScroll) {
+                this.el.panelMessagesContainer.scrollTop = this.el.panelMessagesContainer.scrollHeight - this.el.panelMessagesContainer.offsetHeight;
+            } else {
+                this.el.panelMessagesContainer.scrollTop = scrollTop;
+            }
+        }
     }
 
     closeRecordMicrophone() {

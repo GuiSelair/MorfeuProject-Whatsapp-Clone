@@ -6,6 +6,7 @@ export class Contact extends ClassEvent {
     name, 
     photo,
     lastMessage,
+    chatId,
   }) {
     super()
     this._data = {
@@ -14,7 +15,7 @@ export class Contact extends ClassEvent {
       photo,
       lastMessage: lastMessage || 'Mensagem de teste',
       lastMessageTime: '21:00',
-      status: 'online'
+      status: 'online',
     }
   }
 
