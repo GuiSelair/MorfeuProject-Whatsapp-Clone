@@ -22,6 +22,18 @@ export class WhatsAppController {
     }
 
     initEvents() {
+
+        this.el.inputSearchContacts.on('keyup', () => {
+            if (this.el.inputSearchContacts.value.length > 0) {
+                this.el.inputSearchContactsPlaceholder.hide();
+                this._user.filterContacts(this.el.inputSearchContacts.value)
+            } else {
+                this.el.inputSearchContactsPlaceholder.show();
+                this._user.loadContacts()
+            }
+
+        })
+
         // UNS DOS MÉTOOS PRINCIPAIS RESPONSAVEL PELA INSTANCIA DE 
         // EVENTOS EM DIVERSOS ELEMENTOS.
         this.el.myPhoto.on("click", event => {

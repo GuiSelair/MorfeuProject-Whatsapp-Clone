@@ -55,6 +55,19 @@ export class User extends ClassEvent {
     })
   }
 
+  filterContacts(filter) {
+    const contactsFounded = window.datasource.findAll('contact')
+    const filteredContacts = contactsFounded.filter(contact => contact.name.toLowerCase().includes(filter.toLowerCase()))
+
+    this._data.contacts = filteredContacts.map(contact => new Contact({
+      email: contact.email,
+      name: contact.name,
+      photo: contact.photo,
+      lastMessage: contact.lastMessage,
+    }))
+    this.trigger('contactschange', this._data.contacts)
+  }
+
   toJSON() {
     return this._data
   }
