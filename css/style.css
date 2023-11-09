@@ -6702,7 +6702,8 @@ html[dir=ltr] .img-zoomed-in ._12oAB,html[dir=ltr] .img-zoomed-in ._2_FdF,html[d
     top:0;
     transition:background .3s ease-out .1s;
     width:100%;
-    z-index:100
+    z-index:100;
+    padding: 16px 0;
 }
 ._298R6,._2ByZq{
     display:-webkit-flex

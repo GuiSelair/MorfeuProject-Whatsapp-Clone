@@ -1,4 +1,5 @@
 import { ClassEvent } from "../utils/ClassEvent";
+import { Chat } from "./Chat";
 
 export class Contact extends ClassEvent {
   constructor({
@@ -13,10 +14,18 @@ export class Contact extends ClassEvent {
       email,
       name,
       photo,
-      lastMessage: lastMessage || 'Mensagem de teste',
-      lastMessageTime: '21:00',
+      lastMessage: this.getLastMessage(email).message || lastMessage,
+      lastMessageTime: this.getLastMessage(email).time || new Date().toISOString(),
       status: 'online',
     }
+  }
+
+  getLastMessage(email) {
+    const chatFounded = Chat.find(email)
+    if (!chatFounded || !chatFounded.messages.length) return { message: '', time: '' }
+    const lastMessage = chatFounded.messages[chatFounded.messages.length - 1]
+    const time = new Date(lastMessage.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    return { message: lastMessage.content, time: time }
   }
 
   toJSON() {

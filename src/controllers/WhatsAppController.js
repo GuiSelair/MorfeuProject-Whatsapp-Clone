@@ -18,11 +18,40 @@ export class WhatsAppController {
         this.loadElements();
         this.initEvents();
         this.initUserInfos();
+        this._messagesForUpdate = [];
+        this.intervalForMessagesUpdate();
         console.log("\n=== CONFIGURAÇÃO INICIAL FINALIZADA ===")
     }
 
-    initEvents() {
+    /**
+     * @description Função responsável por monitorar novas mensagens e atualizar o status das mesmas
+     * @returns {void}
+     */
+    intervalForMessagesUpdate() {
+        /** 
+         * @param {Message} message
+         * @param {('sent'|'read'|'received')} statusToGo
+         */
+        function updateMessageStatus(message, statusToGo) {
+            const messageElement = document.querySelector(`#_${message.id}`)
+            if (!messageElement) return;
+            messageElement.querySelector('.message-status').remove();
+            message._status = statusToGo;
+            messageElement.querySelector('.message-time').parentElement.appendChild(message.getStatusViewElement());
+        }
 
+        setInterval(() => {
+            if (this._messagesForUpdate.length > 0) {
+                /** @type {Message} message */
+                const message = this._messagesForUpdate[0].message
+                const statusToGo = this._messagesForUpdate[0].status
+                updateMessageStatus(message, statusToGo)
+                this._messagesForUpdate.shift()
+            }
+        }, 5000) //5 segundos
+    }
+
+    initEvents() {
         this.el.inputSearchContacts.on('keyup', () => {
             if (this.el.inputSearchContacts.value.length > 0) {
                 this.el.inputSearchContactsPlaceholder.hide();
@@ -251,6 +280,10 @@ export class WhatsAppController {
             } else {
                 this.el.panelMessagesContainer.scrollTop = scrollTop;
             }
+
+            this._messagesForUpdate.push({message: message, status: 'sent'})
+            this._messagesForUpdate.push({message: message, status: 'received'})
+            this._messagesForUpdate.push({message: message, status: 'read'})
         });
 
         this.el.btnEmojis.on("click", () => {
@@ -373,14 +406,13 @@ export class WhatsAppController {
     }
 
     initContactsList() {
-        console.log('initContactsList')
         this._user.on("contactschange", contacts => {
-            console.log('contactschange', contacts)
             this.el.contactsMessagesList.innerHTML = "";
             
             contacts.forEach(contact => {
                 const contactEl = document.createElement('div');
                 contactEl.classList.add('contact-item');
+                contactEl.id = `contact-${contact.email}`;
                 contactEl.innerHTML = `
                     <div class="dIyEr">
                         <div class="_1WliW" style="height: 49px; width: 49px;">
@@ -477,6 +509,7 @@ export class WhatsAppController {
                     type: existedMessage.type,
                     createdAt: existedMessage.createdAt,
                     from: existedMessage.from,
+                    status: 'read'
                 })
 
                 const messageView = message.getViewElement(existedMessage.from === this._user.email)

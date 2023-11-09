@@ -2,7 +2,7 @@ export class Chat {
   constructor() {}
 
   static createIfNotExists(contactEmail) {
-    const chatFounded = window.datasource.findOne(`chat-${contactEmail}`)
+    const chatFounded = Chat.find(contactEmail)
 
     if (!chatFounded) {
       return Chat.create(contactEmail)
@@ -10,6 +10,10 @@ export class Chat {
     }
 
     return chatFounded
+  }
+
+  static find(contactEmail) {
+    return window.datasource.findOne(`chat-${contactEmail}`)
   }
 
   static create(contactEmail) {
