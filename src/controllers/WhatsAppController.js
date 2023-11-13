@@ -14,6 +14,7 @@ export class WhatsAppController {
     constructor() {
         window.datasource = new Datasource(new LocalStorage("@morfeu-whatsapp"));
         this._user = null;
+        this._activeContact = null;
         this.elementsPrototype();
         this.loadElements();
         this.initEvents();
@@ -155,7 +156,13 @@ export class WhatsAppController {
 
         this.el.inputPhoto.on("change", () => {
             [...this.el.inputPhoto.files].forEach(file => {
-                console.log(file);
+                Message.sendImage(this._activeContact.email, this._user.email, file).then(message => {
+                    const messageView = message.getViewElement(message.from === this._user.email)
+                    this.el.panelMessagesContainer.appendChild(messageView)
+                    this._messagesForUpdate.push({message: message, status: 'sent'})
+                    this._messagesForUpdate.push({message: message, status: 'received'})
+                    this._messagesForUpdate.push({message: message, status: 'read'})
+                })
             });
         });
 
@@ -388,7 +395,6 @@ export class WhatsAppController {
         }
 
         this._user.on("datachange", data => {
-            console.log('datachange', data )
             document.querySelector('title').innerHTML = data.name + ' - WhatsApp Clone';
             this.el.inputNamePanelEditProfile.innerHTML = data.name;
             if (data.photo) {
@@ -501,7 +507,7 @@ export class WhatsAppController {
             let scrollTop = this.el.panelMessagesContainer.scrollTop;
             let scrollTopMax = this.el.panelMessagesContainer.scrollHeight - this.el.panelMessagesContainer.offsetHeight;
             let autoScroll = scrollTop >= scrollTopMax;
-
+            console.log(scrollTop, scrollTopMax, autoScroll)
             chatContent.messages.forEach(existedMessage => {
                 const message = new Message({
                     id: existedMessage.id,

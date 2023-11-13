@@ -1,4 +1,6 @@
 import { ClassEvent } from "../utils/ClassEvent";
+import { convertImageToBase64 } from "../utils/convertImageToBase64";
+
 
 export class Message extends ClassEvent {
   constructor({
@@ -25,10 +27,10 @@ export class Message extends ClassEvent {
     switch (this.type) {
       case 'image':
         messageEl.innerHTML = `
-          <div class="_3_7SH _3qMSo">
+          <div class="_3_7SH _3qMSo" id="_${this._id}">
               <div class="KYpDv">
                   <div>
-                      <div class="_3v3PK" style="width: 330px; height: 330px;">
+                      <div class="_3v3PK" style="height: auto;">
                           <div class="_34Olu">
                               <div class="_2BzIU">
                                   <div class="_2X3l6">
@@ -45,13 +47,8 @@ export class Message extends ClassEvent {
                                   </div>
                               </div>
                           </div>
-                          <img src="#" class="_1JVSX message-photo" style="width: 100%; display:none">
+                          <img src="${this._content}" class="_1JVSX message-photo" style="width: 100%; display:none">
                           <div class="_1i3Za"></div>
-                      </div>
-                      <div class="message-container-legend">
-                          <div class="_3zb-j ZhF0n">
-                              <span dir="ltr" class="selectable-text invisible-space copyable-text message-text">Texto da foto</span>
-                          </div>
                       </div>
                       <div class="_2TvOE">
                           <div class="_1DZAH text-white" role="button">
@@ -70,6 +67,11 @@ export class Message extends ClassEvent {
               </div>
           </div>
         `;
+
+        messageEl.querySelector('.message-photo').addEventListener('load', () => {
+            messageEl.querySelector('._34Olu').style.display = 'none';
+            messageEl.querySelector('.message-photo').style.display = 'block';
+        })
         break;
       case 'document':
         messageEl.innerHTML = `
@@ -284,6 +286,18 @@ export class Message extends ClassEvent {
     });
     window.datasource.save(`chat-${chatId}`, chatFounded);
     return message
+  }
+
+  static async sendImage(chatId, from, imageFile){
+    const chatFounded = window.datasource.findOne(`chat-${chatId}`);
+
+    if (!chatFounded) {
+      throw new Error('Chat not found');
+    }
+    console.log(chatFounded, imageFile)
+    const imageBase64 = await convertImageToBase64(imageFile);
+    console.log(imageBase64)
+    return Message.send(chatId, from, 'image', imageBase64);
   }
 
   getStatusViewElement() {
