@@ -215,6 +215,63 @@ export class WhatsAppController {
             this.el.panelMessagesContainer.show();
         });
 
+        this.el.btnSendPicture.on("click", () => {
+            const regex = /^data:(.+);base64,(.*)$/;
+            const resultArray = this.el.pictureCamera.src.match(regex);
+            const mimeType = resultArray[1];
+            const fileExtension = mimeType.split('/')[1];
+            const filename = `camera-photo-${Date.now()}.${fileExtension}`;
+
+            this.el.btnSendPicture.disabled = true;
+
+            /** Rotacionar imagem */
+            const picture = new Image();
+            picture.src = this.el.pictureCamera.src;
+            picture.onload = () => {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = picture.width;
+                canvas.height = picture.height;
+
+                context.translate(picture.width, 0);
+                context.scale(-1, 1);
+
+                context.drawImage(picture, 0, 0, canvas.width, canvas.height);
+                const dataUrl = canvas.toDataURL(mimeType);
+
+                /** Tranformando imagem base64 para arquivo */
+                fetch(dataUrl)
+                .then(response => {
+                    return response.arrayBuffer();
+                })
+                .then(buffer => {
+                    return new File([buffer], filename, {
+                        type: mimeType,
+                        lastModified: Date.now()
+                    });
+                })
+                .then(file => {
+                    Message.sendImage(this._activeContact.email, this._user.email, file).then(message => {
+                        const messageView = message.getViewElement(message.from === this._user.email)
+                        this.el.panelMessagesContainer.appendChild(messageView)
+                        this._messagesForUpdate.push({message: message, status: 'sent'})
+                        this._messagesForUpdate.push({message: message, status: 'received'})
+                        this._messagesForUpdate.push({message: message, status: 'read'})
+                    })
+                    this.el.btnSendPicture.disabled = false;
+                    this.closeAllMainPanel();
+                    this._camera.stop();
+                    this.el.btnReshootPanelCamera.hide();
+                    this.el.pictureCamera.hide();
+                    this.el.videoCamera.show();
+                    this.el.containerTakePicture.show();
+                    this.el.containerSendPicture.hide();
+                    this.el.panelMessagesContainer.show();
+                    
+                })
+            }
+        });
+
         this.el.btnSendDocument.on("click", () => {
             console.log("send document");
         });
