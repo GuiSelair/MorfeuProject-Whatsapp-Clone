@@ -201,14 +201,6 @@ export class WhatsAppController {
             this.el.containerSendPicture.hide();
         });
 
-        this.el.btnAttachDocument.on("click", () => {
-            this.closeAllMainPanel();
-            this.el.panelDocumentPreview.addClass("open");
-            this.el.panelDocumentPreview.css({
-                "height": "calc(100% - 120px)"
-            });
-            this.el.inputDocument.click()
-        });
 
         this.el.btnClosePanelDocumentPreview.on("click", () => {
             this.closeAllMainPanel();
@@ -270,14 +262,6 @@ export class WhatsAppController {
                     
                 })
             }
-        });
-
-        this.el.btnSendDocument.on("click", () => {
-            console.log("send document");
-        });
-
-        this.el.btnAttachContact.on("click", () => {
-            this.el.modalContacts.show();
         });
 
         this.el.btnCloseModalContacts.on("click", () => {
