@@ -14,6 +14,6 @@
   "dependencies": {
     "pdfjs-dist": "2.0.943",
     "webpack": "3.1.0",
-    "webpack-dev-server": "2.5.1"
+    "webpack-dev-server": "3.1.11"
   }
 }
