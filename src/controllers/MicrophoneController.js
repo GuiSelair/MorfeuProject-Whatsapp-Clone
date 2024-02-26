@@ -55,7 +55,6 @@ export class MicrophoneController extends ClassEvent {
           lastModified: Date.now(),
           type: this._recorderMimeType
         })
-        console.log(file)
 
       })
 
@@ -66,7 +65,6 @@ export class MicrophoneController extends ClassEvent {
 
   stopRecorder(){
     if (this._stream && this._mediaRecorder){
-      console.log('stopRecorder')
       this._mediaRecorder.stop();
       this.stop();
       this.stopTimer();

@@ -21,7 +21,6 @@ export class WhatsAppController {
         this.initUserInfos();
         this._messagesForUpdate = [];
         this.intervalForMessagesUpdate();
-        console.log("\n=== CONFIGURAÇÃO INICIAL FINALIZADA ===")
     }
 
     /**
@@ -102,7 +101,6 @@ export class WhatsAppController {
         })
 
         this.el.btnSavePanelEditProfile.on("click", event => {
-            console.log(this.el.inputNamePanelEditProfile.innerHTML);
             this.el.btnSavePanelEditProfile.disabled = true;
             this._user.update({
                 name: this.el.inputNamePanelEditProfile.innerHTML,
@@ -274,7 +272,6 @@ export class WhatsAppController {
 
             this._microphoneController = new MicrophoneController();
             this._microphoneController.on("ready", (audio) => {
-                console.log(audio);
                 this._microphoneController.startRecorder();
             })
 
@@ -340,7 +337,6 @@ export class WhatsAppController {
 
         this.el.panelEmojis.querySelectorAll(".emojik").forEach((emoji) => {
             emoji.on("click", (event) => {
-                console.log(event.target);
                 const img = this.el.imgEmojiDefault.cloneNode();
                 img.style.cssText = emoji.style.cssText;
                 img.dataset.unicode = emoji.dataset.unicode;
@@ -375,7 +371,6 @@ export class WhatsAppController {
         });
 
         this.el.inputDocument.on("change", () => {
-            console.log('this.el.inputDocument.files', this.el.inputDocument.files.length)
             if (this.el.inputDocument.files.length) {
                 this.el.panelDocumentPreview.css({
                     "height": "1%"
@@ -548,7 +543,6 @@ export class WhatsAppController {
             let scrollTop = this.el.panelMessagesContainer.scrollTop;
             let scrollTopMax = this.el.panelMessagesContainer.scrollHeight - this.el.panelMessagesContainer.offsetHeight;
             let autoScroll = scrollTop >= scrollTopMax;
-            console.log(scrollTop, scrollTopMax, autoScroll)
             chatContent.messages.forEach(existedMessage => {
                 const message = new Message({
                     id: existedMessage.id,

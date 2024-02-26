@@ -294,9 +294,7 @@ export class Message extends ClassEvent {
     if (!chatFounded) {
       throw new Error('Chat not found');
     }
-    console.log(chatFounded, imageFile)
     const imageBase64 = await convertImageToBase64(imageFile);
-    console.log(imageBase64)
     return Message.send(chatId, from, 'image', imageBase64);
   }
 
