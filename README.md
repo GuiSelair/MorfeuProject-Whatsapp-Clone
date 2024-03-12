@@ -8,4 +8,4 @@
 Aplicação desenvolvida durante o [Curso Completo de JavaScript](https://www.udemy.com/course/javascript-curso-completo/) ministrado pela [HCode Treinamentos](https://www.hcode.com.br/#/) realizado na [Udemy](https://www.udemy.com/). A aplicação consiste em reproduzir um site clone do _Whatsapp_. Desde a **pré-visualização de arquivos PDFs e imagens, até captura de vídeo e áudio** foram temas abordados nesse projeto. 
 
 ## Preview
-[Veja o preview](https://github-clone-guiselair.netlify.app/](https://www.guilhermeselair.dev/project/whatsapp-clone/demo)https://www.guilhermeselair.dev/project/whatsapp-clone/demo)
+[Veja a DEMO](https://www.guilhermeselair.dev/project/whatsapp-clone/demo)
